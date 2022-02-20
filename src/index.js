@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./styles.css";
+import axios from "axios";
 
 let mountNode = document.getElementById("root");
 
@@ -11,28 +12,10 @@ let mountNode = document.getElementById("root");
 // 1. Card
 // 2. The list itself
 
-const testData = [
-    {
-        name: "Dan Abramov",
-        avatar_url: "https://avatars0.githubusercontent.com/u/810438?v=4",
-        company: "@facebook",
-    },
-    {
-        name: "Sophie Alpert",
-        avatar_url: "https://avatars2.githubusercontent.com/u/6820?v=4",
-        company: "Humu",
-    },
-    {
-        name: "Sebastian Markbåge",
-        avatar_url: "https://avatars2.githubusercontent.com/u/63648?v=4",
-        company: "Facebook",
-    },
-];
-
 const CardList = (props) => (
     <div>
         {props.profiles.map((profile) => (
-            <Card {...profile} />
+            <Card key={profile.id} {...profile} />
         ))}
     </div>
 );
@@ -57,10 +40,28 @@ class Card extends React.Component {
 }
 
 class Form extends React.Component {
+    state = { userName: "" };
+    handleSubmit = async (event) => {
+        // without preventDefault on submit even our page is going to refresh
+        event.preventDefault();
+        const resp = await axios.get(
+            `https://api.github.com/users/${this.state.userName}`
+        );
+        this.props.onSubmit(resp.data);
+        this.setState({ userName: "" });
+    };
     render() {
         return (
-            <form action="">
-                <input type="text" placeholder="GitHub username" />
+            <form onSubmit={this.handleSubmit}>
+                <input
+                    type="text"
+                    value={this.state.userName}
+                    onChange={(event) =>
+                        this.setState({ userName: event.target.value })
+                    }
+                    placeholder="GitHub username"
+                    required
+                />
                 <button>Add card</button>
             </form>
         );
@@ -71,12 +72,15 @@ class App extends React.Component {
     // constructor
     // this
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            profiles: testData,
-        };
-    }
+    state = {
+        profiles: [],
+    };
+
+    addNewProfile = (profileData) => {
+        this.setState((prevState) => ({
+            profiles: [...prevState.profiles, profileData],
+        }));
+    };
 
     // each component in react is required to have a render() function (a class can have as many functions as needed, but render function is required)
     render() {
@@ -84,7 +88,7 @@ class App extends React.Component {
         return (
             <div>
                 <div className="header">{this.props.title}</div>
-                <Form />
+                <Form onSubmit={this.addNewProfile} />
                 <CardList profiles={this.state.profiles} />
             </div>
         );
