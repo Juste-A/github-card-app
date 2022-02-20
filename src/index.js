@@ -31,7 +31,7 @@ const testData = [
 
 const CardList = (props) => (
     <div>
-        {testData.map((profile) => (
+        {props.profiles.map((profile) => (
             <Card {...profile} />
         ))}
     </div>
@@ -56,9 +56,27 @@ class Card extends React.Component {
     }
 }
 
+class Form extends React.Component {
+    render() {
+        return (
+            <form action="">
+                <input type="text" placeholder="GitHub username" />
+                <button>Add card</button>
+            </form>
+        );
+    }
+}
+
 class App extends React.Component {
     // constructor
     // this
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            profiles: testData,
+        };
+    }
 
     // each component in react is required to have a render() function (a class can have as many functions as needed, but render function is required)
     render() {
@@ -66,7 +84,8 @@ class App extends React.Component {
         return (
             <div>
                 <div className="header">{this.props.title}</div>
-                <CardList />
+                <Form />
+                <CardList profiles={this.state.profiles} />
             </div>
         );
     }

@@ -5,6 +5,15 @@
     margin-bottom: 1rem;
 }
 
+form {
+    border: thin solid #ddd;
+    background-color: #fbfbfb;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
 .github-profile {
     margin: 1rem;
 }
